@@ -52,9 +52,10 @@ const products = [
     id: 2,
     name: "Santexnika mahsuloti",
     price: 150000,
-    img:"https://waterpro.uz/storage/media/64/conversions/435ac13cb585faaa04f372baec9ae0a3.webp"
+    img: "https://waterpro.uz/storage/media/64/conversions/435ac13cb585faaa04f372baec9ae0a3.webp"
   }
 ];
+let cart = [];
 function render(){
 let q=document.getElementById("search").value.toLowerCase();
 document.getElementById("products").innerHTML=products.filter(p=>p.name.toLowerCase().includes(q)).map(p=>`
@@ -72,8 +73,27 @@ document.getElementById("count").textContent=cart.reduce((s,p)=>s+p.qty,0);
 document.getElementById("total").textContent=cart.reduce((s,p)=>s+p.price*p.qty,0).toLocaleString("uz-UZ");
 }
 function checkout(){
-if(!cart.length){alert("Avval mahsulot tanlang!");return}
-alert("Buyurtma berish tizimini keyingi bosqichda ulaymiz.");
+  if(!cart.length){
+    alert("Avval mahsulot tanlang!");
+    return;
+  }
+
+  if(!window.Telegram || !window.Telegram.WebApp){
+    alert("Buyurtma berish uchun Telegram ichidagi do‘kondan foydalaning!");
+    return;
+  }
+
+  const order = {
+    items: cart.map(item => ({
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity || 1
+    })),
+    total: cart.reduce((sum, item) =>
+      sum + item.price * (item.quantity || 1), 0)
+  };
+
+  window.Telegram.WebApp.sendData(JSON.stringify(order));
 }
 document.getElementById("search").addEventListener("input",render);
 render();renderCart();
