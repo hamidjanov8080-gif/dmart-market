@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMART MARKET</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f6f4;font-family:Arial,sans-serif;color:#18251e}
+header{background:#075b3b;color:white;padding:20px}
+header h2{margin:0 0 15px}
+.search{width:100%;padding:13px;border:0;border-radius:10px;font-size:15px}
+main{padding:15px}
+h3{margin:10px 0 15px}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:white;border-radius:13px;padding:10px;box-shadow:0 2px 8px #00000010}
+.card img{width:100%;height:125px;object-fit:contain}
+.card h4{font-size:14px;margin:8px 0}
+.price{font-weight:bold;color:#087447;margin:8px 0}
+.card button,.checkout{background:#087447;color:white;border:0;padding:11px;border-radius:9px;width:100%;font-weight:bold}
+.cart{background:white;margin-top:20px;padding:15px;border-radius:13px}
+.cart-item{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #eee}
+footer{text-align:center;padding:20px;color:#777;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<h2>🛍 DMART MARKET</h2>
+<input class="search" id="search" placeholder="Mahsulot qidirish...">
+</header>
+<main>
+<h3>🔥 Mahsulotlar katalogi</h3>
+<div class="products" id="products"></div>
+<div class="cart">
+<h3>🛒 Savatcha (<span id="count">0</span>)</h3>
+<div id="cart"></div>
+<h3>Jami: <span id="total">0</span> so'm</h3>
+<button class="checkout" onclick="checkout()">Buyurtma berish</button>
+</div>
+</main>
+<footer>DMART MARKET © 2026</footer>
+<script>
+const products=[
+{id:1,name:"Ecora suv isitgich",price:1095000,img:"https://placehold.co/300x200?text=Ecora"},
+{id:2,name:"Santexnika mahsuloti",price:150000,img:"https://placehold.co/300x200?text=DMART"}
+];
+let cart=[];
+function render(){
+let q=document.getElementById("search").value.toLowerCase();
+document.getElementById("products").innerHTML=products.filter(p=>p.name.toLowerCase().includes(q)).map(p=>`
+<div class="card">
+<img src="${p.img}">
+<h4>${p.name}</h4>
+<div class="price">${p.price.toLocaleString("uz-UZ")} so'm</div>
+<button onclick="add(${p.id})">+ Savatga</button>
+</div>`).join("");
+}
+function add(id){let p=products.find(x=>x.id===id);let c=cart.find(x=>x.id===id);if(c)c.qty++;else cart.push({...p,qty:1});renderCart()}
+function renderCart(){
+document.getElementById("cart").innerHTML=cart.map(p=>`<div class="cart-item"><span>${p.name} × ${p.qty}</span><span>${(p.price*p.qty).toLocaleString("uz-UZ")} so'm</span></div>`).join("")||"Savatcha bo'sh";
+document.getElementById("count").textContent=cart.reduce((s,p)=>s+p.qty,0);
+document.getElementById("total").textContent=cart.reduce((s,p)=>s+p.price*p.qty,0).toLocaleString("uz-UZ");
+}
+function checkout(){
+if(!cart.length){alert("Avval mahsulot tanlang!");return}
+alert("Buyurtma berish tizimini keyingi bosqichda ulaymiz.");
+}
+document.getElementById("search").addEventListener("input",render);
+render();renderCart();
+</script>
+</body>
+</html>
